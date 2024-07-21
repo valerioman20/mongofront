@@ -11,7 +11,7 @@ export default function AddPost() {
     author: '',
     content: ''
   });
-  
+
   const [deleteId, setDeleteId] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('info');
@@ -31,7 +31,7 @@ export default function AddPost() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const data = new FormData();
     data.append('category', formData.category);
     data.append('title', formData.title);
@@ -42,12 +42,15 @@ export default function AddPost() {
     data.append('content', formData.content);
 
     // Debug: Verifico cosa viene aggiunto al FormData
-    for (let [key, value] of data.entries()) { 
+    for (let [key, value] of data.entries()) {
       console.log(key, value);
     }
 
     fetch('http://localhost:5001/api/posts', {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      },
       body: data
     })
       .then(response => {
@@ -79,30 +82,33 @@ export default function AddPost() {
   const handleDelete = () => {
     fetch(`http://localhost:5001/api/posts/${deleteId}`, {
       method: 'DELETE',
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Errore nella cancellazione del post.');
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
       }
-      return response.json();
     })
-    .then(data => {
-      console.log("Post deleted:", data);
-      setDeleteId('');
-      setMessageType('success');
-      setMessage('Il tuo post è stato eliminato!');
-    })
-    .catch(error => {
-      console.error(error);
-      setMessageType('danger');
-      setMessage('Errore nella cancellazione del post.');
-    });
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Errore nella cancellazione del post.');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Post deleted:", data);
+        setDeleteId('');
+        setMessageType('success');
+        setMessage('Il tuo post è stato eliminato!');
+      })
+      .catch(error => {
+        console.error(error);
+        setMessageType('danger');
+        setMessage('Errore nella cancellazione del post.');
+      });
   };
 
   return (
     <Container>
       <h1 className="my-4">Add New Article</h1>
-      {message && <Alert variant={messageType}>{message}</Alert>} 
+      {message && <Alert variant={messageType}>{message}</Alert>}
       <Form onSubmit={handleSubmit} className="mb-4">
         <Form.Group controlId="formCategory">
           <Form.Label>Category</Form.Label>
@@ -142,7 +148,7 @@ export default function AddPost() {
           Add Post
         </Button>
       </Form>
-      
+
       <h2 className="my-4">Delete Article</h2>
       <Form.Group controlId="formDeleteId">
         <Form.Label>Article ID</Form.Label>
