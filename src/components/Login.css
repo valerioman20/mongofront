@@ -1,0 +1,11 @@
+.google-btn {
+    background-color: #0f0f0f; 
+    color: white;
+    border: none; 
+  }
+  
+  .google-btn:hover, .google-btn:focus {
+    background-color: #0f0f0f; 
+    color: white;
+  }
+  
